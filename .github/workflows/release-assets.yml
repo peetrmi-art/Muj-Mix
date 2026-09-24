@@ -1,0 +1,58 @@
+name: Sync addon release assets
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "*.rar"
+      - ".github/workflows/release-assets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Create release and sync changed RAR files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BEFORE: ${{ github.event.before }}
+          CURRENT: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="downloads"
+
+          if ! gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$REPO" --target main \
+              --title "Stajli Addons – soubory ke stažení" \
+              --notes "Soubory addonů používané webem Stajli Addons."
+            shopt -s nullglob
+            files=(*.rar)
+            if ((${#files[@]})); then
+              gh release upload "$TAG" "${files[@]}" --repo "$REPO"
+            fi
+            exit 0
+          fi
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            shopt -s nullglob
+            files=(*.rar)
+          else
+            mapfile -t files < <(git diff --name-only "$BEFORE" "$CURRENT" -- "*.rar")
+          fi
+
+          for file in "${files[@]}"; do
+            if [[ -f "$file" ]]; then
+              gh release upload "$TAG" "$file" --repo "$REPO" --clobber
+            fi
+          done
