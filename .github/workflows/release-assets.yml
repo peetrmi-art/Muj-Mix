@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "*.rar"
+      - "*.zip"
       - ".github/workflows/release-assets.yml"
   workflow_dispatch:
 
@@ -20,7 +21,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Create release and sync changed RAR files
+      - name: Create release and sync changed addon archives
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -37,18 +38,25 @@ jobs:
               --title "Stajli Addons – soubory ke stažení" \
               --notes "Soubory addonů používané webem Stajli Addons."
             shopt -s nullglob
-            files=(*.rar)
+            files=(*.rar *.zip)
             if ((${#files[@]})); then
               gh release upload "$TAG" "${files[@]}" --repo "$REPO"
             fi
             exit 0
           fi
 
-          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]] || git diff --name-only "$BEFORE" "$CURRENT" | grep -q '^.github/workflows/release-assets.yml
+
+          for file in "${files[@]}"; do
+            if [[ -f "$file" ]]; then
+              gh release upload "$TAG" "$file" --repo "$REPO" --clobber
+            fi
+          done
+; then
             shopt -s nullglob
-            files=(*.rar)
+            files=(*.rar *.zip)
           else
-            mapfile -t files < <(git diff --name-only "$BEFORE" "$CURRENT" -- "*.rar")
+            mapfile -t files < <(git diff --name-only "$BEFORE" "$CURRENT" -- "*.rar" "*.zip")
           fi
 
           for file in "${files[@]}"; do
