@@ -9,6 +9,8 @@ if(count){
 }
 
 const FORM_ENDPOINT="https://formspree.io/f/xppwlrlz";
+const RELEASE_API="https://api.github.com/repos/peetrmi-art/Muj-Mix/releases/tags/downloads";
+const RELEASE_BASE="https://github.com/peetrmi-art/Muj-Mix/releases/download/downloads/";
 
 let ai=0,ii=0;
 const d=document.getElementById("gallery");
@@ -29,9 +31,17 @@ function openG(i){
   d.showModal();
 }
 
+function addonFileName(x){
+  return decodeURIComponent(x.download.split("/").pop());
+}
+
 a.forEach((x,i)=>{
+  const fileName=addonFileName(x);
+  const releaseUrl=RELEASE_BASE+encodeURIComponent(fileName);
+
   const c=document.createElement("article");
   c.className="card";
+  c.dataset.file=fileName;
   c.innerHTML=
     '<div class="cover">'+
       '<img src="'+x.images[0]+'" alt="'+x.name+'">'+
@@ -44,9 +54,10 @@ a.forEach((x,i)=>{
         '<span>'+x.fileType+'</span>'+
         '<span>'+x.fileSize+'</span>'+
         '<span>Verze '+x.version+'</span>'+
+        '<span class="download-count">⬇ 0 stažení</span>'+
       '</div>'+
       '<div class="actions">'+
-        '<a class="btn primary" href="'+x.download+'" download>⬇ Stáhnout</a>'+
+        '<a class="btn primary download-link" href="'+releaseUrl+'">⬇ Stáhnout</a>'+
         '<button class="btn ghost gallery-btn" type="button">Obrázky</button>'+
       '</div>'+
       '<button class="feedback-toggle" type="button">💬 Napsat připomínku nebo nápad</button>'+
@@ -116,6 +127,31 @@ a.forEach((x,i)=>{
 
   g.appendChild(c);
 });
+
+async function loadDownloadCounts(){
+  try{
+    const response=await fetch(RELEASE_API,{headers:{"Accept":"application/vnd.github+json"}});
+    if(!response.ok) throw new Error("GitHub API");
+    const release=await response.json();
+    const assets=new Map((release.assets||[]).map(asset=>[asset.name,asset]));
+
+    document.querySelectorAll(".card[data-file]").forEach(card=>{
+      const asset=assets.get(card.dataset.file);
+      if(!asset) return;
+
+      const counter=card.querySelector(".download-count");
+      const link=card.querySelector(".download-link");
+      counter.textContent="⬇ "+asset.download_count+" stažení";
+      link.href=asset.browser_download_url;
+    });
+  }catch(err){
+    document.querySelectorAll(".download-count").forEach(el=>{
+      el.textContent="⬇ počet stažení nedostupný";
+    });
+  }
+}
+
+loadDownloadCounts();
 
 document.getElementById("closeGallery").onclick=()=>d.close();
 document.getElementById("prev").onclick=()=>{
