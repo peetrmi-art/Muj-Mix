@@ -50,6 +50,7 @@ a.forEach((x,i)=>{
     '<div class="body">'+
       '<h3>'+x.name+'</h3>'+
       '<p>'+x.description+'</p>'+
+      (x.update?'<div class="update-note">'+x.update+'</div>':'')+
       '<div class="meta">'+
         '<span>'+x.fileType+'</span>'+
         '<span>'+x.fileSize+'</span>'+
