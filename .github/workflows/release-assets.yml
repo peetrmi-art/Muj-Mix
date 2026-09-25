@@ -41,19 +41,32 @@ jobs:
 
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]] || git diff --name-only "$BEFORE" "$CURRENT" | grep -Fxq ".github/workflows/release-assets.yml"; then
             shopt -s nullglob
-            files=(*.rar *.zip)
+            local_files=(*.rar *.zip)
             existing="$(gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name')"
-            for file in "${files[@]}"; do
+
+            for file in "${local_files[@]}"; do
               if ! grep -Fxq "$file" <<<"$existing"; then
                 gh release upload "$TAG" "$file" --repo "$REPO"
               fi
             done
+
+            while IFS= read -r asset; do
+              [[ -z "$asset" ]] && continue
+              if [[ ! -f "$asset" ]]; then
+                gh release delete-asset "$TAG" "$asset" --repo "$REPO" --yes
+              fi
+            done <<<"$existing"
+
             exit 0
           fi
 
-          mapfile -t files < <(git diff --name-only "$BEFORE" "$CURRENT" -- "*.rar" "*.zip")
-          for file in "${files[@]}"; do
+          mapfile -t changed < <(git diff --name-only "$BEFORE" "$CURRENT" -- "*.rar" "*.zip")
+          for file in "${changed[@]}"; do
             if [[ -f "$file" ]]; then
               gh release upload "$TAG" "$file" --repo "$REPO" --clobber
+            else
+              if gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name' | grep -Fxq "$file"; then
+                gh release delete-asset "$TAG" "$file" --repo "$REPO" --yes
+              fi
             fi
           done
