@@ -48,7 +48,7 @@ a.forEach((x,i)=>{
       '<span class="badge">'+x.badge+'</span>'+
     '</div>'+
     '<div class="body">'+
-      '<div class="title-row"><h3>'+x.name+'</h3>'+(x.flag?'<span class="title-flag">'+x.flag+'</span>':'')+'</div>'+
+      '<div class="title-row"><h3>'+x.name+'</h3>'+(x.flag==="cz"?'<span class="cz-flag" role="img" aria-label="Česká vlajka"></span>':'')+'</div>'+
       '<p>'+x.description+'</p>'+
       (x.warning?'<div class="warning-note">'+x.warning+'</div>':'')+
       (x.update?'<div class="update-note'+(x.updateStyle?' '+x.updateStyle:'')+'">'+x.update+'</div>':'')+
