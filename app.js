@@ -42,6 +42,7 @@ a.forEach((x,i)=>{
   const c=document.createElement("article");
   c.className="card";
   c.dataset.file=fileName;
+  c.dataset.offset=String(x.downloadOffset||0);
   c.innerHTML=
     '<div class="cover">'+
       '<img src="'+x.images[0]+'" alt="'+x.name+'">'+
@@ -144,7 +145,8 @@ async function loadDownloadCounts(){
 
       const counter=card.querySelector(".download-count");
       const link=card.querySelector(".download-link");
-      counter.textContent="⬇ "+asset.download_count+" stažení";
+      const total=(Number(card.dataset.offset)||0)+asset.download_count;
+      counter.textContent="⬇ "+total+" stažení";
       link.href=asset.browser_download_url;
     });
   }catch(err){
