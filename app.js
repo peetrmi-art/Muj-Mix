@@ -52,6 +52,7 @@ a.forEach((x,i)=>{
       '<div class="title-row"><h3>'+x.name+'</h3>'+(x.flag==="cz"?'<span class="cz-flag" role="img" aria-label="Česká vlajka"></span>':'')+'</div>'+
       (x.subtitle?'<div class="subtitle-note">'+x.subtitle+'</div>':'')+
       '<p>'+x.description+'</p>'+
+      (x.hint?'<div class="hint-note">'+x.hint+'</div>':'')+
       (x.warning?'<div class="warning-note">'+x.warning+'</div>':'')+
       (x.update?'<div class="update-note'+(x.updateStyle?' '+x.updateStyle:'')+'">'+x.update+'</div>':'')+
       '<div class="meta">'+
