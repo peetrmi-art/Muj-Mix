@@ -3,20 +3,126 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Stajli Addons – přehled a stahování addonů pro World of Warcraft Forever.">
-  <meta name="theme-color" content="#0d1016">
-  <title>Stajli Addons</title>
+  <meta name="description" content="Forever Čeština – neoficiální fanouškovský český překlad pro WoW Forever.">
+  <meta name="theme-color" content="#05070a">
+  <title>Forever Čeština • Stajli Addons</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="topbar"><a class="brand" href="#top"><span class="brand-mark">S</span><span><strong>Stajli Addons</strong><small>World of Warcraft Forever</small></span></a><nav><a href="#addons">Addony</a><a href="#install">Instalace</a><a href="#about">Moje místo</a></nav></header>
+<header class="topbar">
+  <a class="brand" href="#top">
+    <span class="brand-mark">S</span>
+    <span><strong>Stajli Addons</strong><small>World of Warcraft Forever</small></span>
+  </a>
+  <nav>
+    <a href="#addon">Čeština</a>
+    <a href="#install">Instalace</a>
+    <a href="#about">O projektu</a>
+  </nav>
+</header>
+
 <main id="top">
-<section class="hero"><div><span class="eyebrow">WOW ADDONS • CZ</span><h1>Moje addony na WoW Forever.</h1><p>Jednoduché stahování, screenshoty a stručný popis funkcí.</p><a class="btn primary" href="#addons">Prohlédnout addony</a></div><aside><b id="addonCount">Addony</b></aside></section>
-<section id="addons" class="section"><div class="heading"><div><span class="eyebrow">KE STAŽENÍ</span><h2>Addony</h2></div><p>Vyber addon a stáhni ho.</p></div><div id="addonsGrid" class="grid"></div></section>
-<section id="install" class="section"><div class="heading"><div><span class="eyebrow">RYCHLÝ NÁVOD</span><h2>Instalace</h2></div></div><div class="steps"><article><b>01</b><h3>Stáhni RAR</h3><p>Klikni u addonu na Stáhnout.</p></article><article><b>02</b><h3>Rozbal</h3><p>Rozbal archiv.</p></article><article><b>03</b><h3>Vlož do AddOns</h3><p>Složku vlož do <code>Interface/AddOns</code>.</p></article><article><b>04</b><h3>Spusť hru</h3><p>Addon zapni v nabídce AddOns.</p></article></div></section>
-<section id="about" class="section about"><div><span class="eyebrow">MOJE MÍSTO</span><h2>Moje místo pro addony.</h2></div><p>Tady mám pohromadě svoje addony pro WoW Forever, jejich aktualizace, screenshoty a soubory ke stažení.</p></section>
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">WOW FOREVER • CZ</span>
+      <h1>Forever Čeština<br><span>pro WoW Forever.</span></h1>
+      <p>Neoficiální fanouškovský překlad herních textů do češtiny.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#addon">Stáhnout češtinu</a>
+        <a class="btn ghost" href="#screens">Screenshoty</a>
+      </div>
+    </div>
+    <div class="hero-badge">
+      <span class="cz-flag large" aria-hidden="true"></span>
+      <div><strong>Český překlad</strong><small>WoW Forever</small></div>
+    </div>
+  </section>
+
+  <section id="addon" class="featured section">
+    <div class="featured-shell">
+      <div class="showcase" id="screens">
+        <button class="gallery-open" id="mainPreview" type="button">
+          <img id="featuredImage" alt="Forever Čeština – náhled">
+          <span class="preview-label">ČEŠTINA</span>
+          <span class="preview-zoom">Zvětšit</span>
+        </button>
+        <div id="thumbs" class="thumbs" aria-label="Screenshoty addonu"></div>
+      </div>
+
+      <div class="addon-info">
+        <div class="title-row">
+          <div>
+            <span class="eyebrow">AKTUÁLNÍ VERZE</span>
+            <h2 id="addonTitle">Forever Čeština</h2>
+          </div>
+          <span class="cz-flag" aria-label="Česká vlajka"></span>
+        </div>
+
+        <p class="subtitle" id="addonSubtitle"></p>
+        <p class="lead">Česká lokalizace pro WoW Forever zaměřená na questy, dialogy, kouzla, talenty, nastavení a další herní texty.</p>
+
+        <div id="updateBox" class="update-box"></div>
+
+        <details class="details">
+          <summary>Co addon překládá a jak funguje SHIFT</summary>
+          <p id="descriptionText"></p>
+          <p id="hintText" class="hint"></p>
+        </details>
+
+        <div class="meta" id="meta"></div>
+
+        <div class="main-actions">
+          <a id="downloadBtn" class="btn primary download-main" href="#">⬇ Stáhnout</a>
+          <button id="galleryBtn" class="btn ghost" type="button">Obrázky</button>
+        </div>
+
+        <button id="feedbackToggle" class="feedback-toggle" type="button">💬 Napsat připomínku nebo nápad</button>
+        <form id="feedbackForm" class="feedback-form" hidden>
+          <input type="hidden" name="addon" value="Forever Čeština">
+          <input type="hidden" name="page" id="feedbackPage">
+          <label>Přezdívka <small>(volitelné)</small>
+            <input type="text" name="nickname" maxlength="60" autocomplete="nickname" placeholder="Tvoje přezdívka">
+          </label>
+          <label>Zpráva / připomínka
+            <textarea name="message" maxlength="1500" rows="4" required placeholder="Co nefunguje, co by šlo zlepšit nebo jaký máš nápad?"></textarea>
+          </label>
+          <button class="btn primary feedback-submit" type="submit">Odeslat připomínku</button>
+          <div class="feedback-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="install" class="section compact-section">
+    <div class="section-head">
+      <span class="eyebrow">RUČNÍ INSTALACE</span>
+      <h2>Tři kroky a hotovo</h2>
+    </div>
+    <div class="steps">
+      <article><b>01</b><h3>Stáhni ZIP</h3><p>Použij tlačítko Stáhnout nahoře.</p></article>
+      <article><b>02</b><h3>Rozbal archiv</h3><p>Uvnitř najdeš složku addonu.</p></article>
+      <article><b>03</b><h3>Vlož do AddOns</h3><p><code>Interface/AddOns</code> a spusť hru.</p></article>
+    </div>
+  </section>
+
+  <section id="about" class="section about">
+    <div>
+      <span class="eyebrow">O PROJEKTU</span>
+      <h2>Čeština pro hráče WoW Forever</h2>
+    </div>
+    <p>Fanouškovský projekt. Překlad průběžně aktualizuji podle změn ve WoW Forever a případné chyby doplňuji v dalších verzích.</p>
+  </section>
 </main>
+
 <footer>© <span id="year"></span> Stajli Addons • Neoficiální fanouškovský projekt.</footer>
-<dialog id="gallery"><button id="closeGallery">×</button><img id="galleryImage" alt=""><div><button id="prev">←</button><span id="pos"></span><button id="next">→</button></div></dialog>
-<script src="addons.js"></script><script src="app.js"></script>
-</body></html>
+
+<dialog id="gallery">
+  <button id="closeGallery" class="dialog-close" aria-label="Zavřít">×</button>
+  <img id="galleryImage" alt="">
+  <div class="dialog-nav"><button id="prev">←</button><span id="pos"></span><button id="next">→</button></div>
+</dialog>
+
+<script src="addons.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
