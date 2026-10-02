@@ -1,182 +1,120 @@
 const a=window.ADDONS||[];
-const g=document.getElementById("addonsGrid");
-document.getElementById("year").textContent=new Date().getFullYear();
-
-const count=document.getElementById("addonCount");
-if(count){
-  const n=a.length;
-  count.textContent=n+" "+(n===1?"addon":n>=2&&n<=4?"addony":"addonů");
-}
-
+const x=a[0];
 const FORM_ENDPOINT="https://formspree.io/f/xppwlrlz";
 const RELEASE_API="https://api.github.com/repos/peetrmi-art/Muj-Mix/releases/tags/downloads";
 const RELEASE_BASE="https://github.com/peetrmi-art/Muj-Mix/releases/download/downloads/";
 
-let ai=0,ii=0;
-const d=document.getElementById("gallery");
-const im=document.getElementById("galleryImage");
-const pos=document.getElementById("pos");
+document.getElementById("year").textContent=new Date().getFullYear();
 
-function show(){
-  const x=a[ai];
-  im.src=x.images[ii];
-  im.alt=x.name;
-  pos.textContent=(ii+1)+" / "+x.images.length;
-}
+const featuredImage=document.getElementById("featuredImage");
+const thumbs=document.getElementById("thumbs");
+const addonTitle=document.getElementById("addonTitle");
+const addonSubtitle=document.getElementById("addonSubtitle");
+const descriptionText=document.getElementById("descriptionText");
+const hintText=document.getElementById("hintText");
+const updateBox=document.getElementById("updateBox");
+const meta=document.getElementById("meta");
+const downloadBtn=document.getElementById("downloadBtn");
+const galleryBtn=document.getElementById("galleryBtn");
+const mainPreview=document.getElementById("mainPreview");
 
-function openG(i){
-  ai=i;
-  ii=0;
-  show();
-  d.showModal();
-}
+addonTitle.textContent=x.name;
+addonSubtitle.textContent=x.subtitle||"";
+descriptionText.textContent=x.description||"";
+hintText.textContent=x.hint||"";
+updateBox.textContent=x.update||"";
+featuredImage.src=x.images[0];
+featuredImage.alt=x.name;
 
-function addonFileName(x){
-  return decodeURIComponent(x.download.split("/").pop());
-}
-
-a.forEach((x,i)=>{
-  const fileName=addonFileName(x);
-  const releaseUrl=RELEASE_BASE+encodeURIComponent(fileName);
-
-  const c=document.createElement("article");
-  c.className="card";
-  c.dataset.file=fileName;
-  c.dataset.offset=String(x.downloadOffset||0);
-  c.innerHTML=
-    '<div class="cover">'+
-      '<img src="'+x.images[0]+'" alt="'+x.name+'">'+
-      '<span class="badge">'+x.badge+'</span>'+
-    '</div>'+
-    '<div class="body">'+
-      '<div class="title-row"><h3>'+x.name+'</h3>'+(x.flag==="cz"?'<span class="cz-flag" role="img" aria-label="Česká vlajka"></span>':'')+'</div>'+
-      (x.subtitle?'<div class="subtitle-note">'+x.subtitle+'</div>':'')+
-      '<button class="description-toggle" type="button" aria-expanded="false">▸ Zobrazit popis</button>'+
-      '<div class="description-panel" hidden>'+
-        '<p>'+x.description+'</p>'+
-        (x.hint?'<div class="hint-note">'+x.hint+'</div>':'')+
-      '</div>'+
-      (x.warning?'<div class="warning-note">'+x.warning+'</div>':'')+
-      (x.update?'<div class="update-note'+(x.updateStyle?' '+x.updateStyle:'')+'">'+x.update+'</div>':'')+
-      '<div class="meta">'+
-        '<span>'+x.fileType+'</span>'+
-        '<span>'+x.fileSize+'</span>'+
-        '<span>Verze '+x.version+'</span>'+
-        '<span class="download-count">⬇ 0 stažení</span>'+
-      '</div>'+
-      '<div class="actions">'+
-        '<a class="btn primary download-link" href="'+releaseUrl+'">⬇ Stáhnout</a>'+
-        '<button class="btn ghost gallery-btn" type="button">Obrázky</button>'+
-      '</div>'+
-      '<button class="feedback-toggle" type="button">💬 Napsat připomínku nebo nápad</button>'+
-      '<form class="feedback-form" hidden>'+
-        '<input type="hidden" name="addon" value="'+x.name.replace(/"/g,"&quot;")+'">'+
-        '<input type="hidden" name="page" value="'+location.href.replace(/"/g,"&quot;")+'">'+
-        '<label>Přezdívka <small>(volitelné)</small>'+
-          '<input type="text" name="nickname" maxlength="60" autocomplete="nickname" placeholder="Tvoje přezdívka">'+
-        '</label>'+
-        '<label>Zpráva / připomínka'+
-          '<textarea name="message" maxlength="1500" rows="4" required placeholder="Co nefunguje, co by šlo zlepšit nebo jaký máš nápad?"></textarea>'+
-        '</label>'+
-        '<button class="btn primary feedback-submit" type="submit">Odeslat připomínku</button>'+
-        '<div class="feedback-status" role="status" aria-live="polite"></div>'+
-      '</form>'+
-    '</div>';
-
-  c.querySelector(".cover").onclick=()=>openG(i);
-  c.querySelector(".gallery-btn").onclick=()=>openG(i);
-
-  const descriptionToggle=c.querySelector(".description-toggle");
-  const descriptionPanel=c.querySelector(".description-panel");
-  descriptionToggle.onclick=()=>{
-    const opening=descriptionPanel.hidden;
-    descriptionPanel.hidden=!opening;
-    descriptionToggle.setAttribute("aria-expanded",String(opening));
-    descriptionToggle.textContent=opening?"▾ Skrýt popis":"▸ Zobrazit popis";
+x.images.forEach((src,i)=>{
+  const b=document.createElement("button");
+  b.className="thumb"+(i===0?" active":"");
+  b.type="button";
+  b.innerHTML='<img src="'+src+'" alt="'+x.name+' screenshot '+(i+1)+'">';
+  b.onclick=()=>{
+    featuredImage.src=src;
+    document.querySelectorAll(".thumb").forEach(t=>t.classList.remove("active"));
+    b.classList.add("active");
   };
-
-  const toggle=c.querySelector(".feedback-toggle");
-  const form=c.querySelector(".feedback-form");
-  toggle.onclick=()=>{
-    const opening=form.hidden;
-    form.hidden=!opening;
-    toggle.textContent=opening?"✕ Zavřít formulář":"💬 Napsat připomínku nebo nápad";
-    if(opening){
-      const field=form.querySelector("textarea");
-      setTimeout(()=>field.focus(),0);
-    }
-  };
-
-  form.addEventListener("submit",async(e)=>{
-    e.preventDefault();
-    const submit=form.querySelector(".feedback-submit");
-    const status=form.querySelector(".feedback-status");
-    submit.disabled=true;
-    submit.textContent="Odesílám…";
-    status.className="feedback-status";
-    status.textContent="";
-
-    try{
-      const response=await fetch(FORM_ENDPOINT,{
-        method:"POST",
-        body:new FormData(form),
-        headers:{"Accept":"application/json"}
-      });
-
-      if(response.ok){
-        form.reset();
-        form.querySelector('input[name="addon"]').value=x.name;
-        form.querySelector('input[name="page"]').value=location.href;
-        status.classList.add("success");
-        status.textContent="✓ Díky, připomínka byla odeslána.";
-      }else{
-        status.classList.add("error");
-        status.textContent="Nepodařilo se odeslat zprávu. Zkus to prosím znovu.";
-      }
-    }catch(err){
-      status.classList.add("error");
-      status.textContent="Nepodařilo se odeslat zprávu. Zkontroluj připojení a zkus to znovu.";
-    }finally{
-      submit.disabled=false;
-      submit.textContent="Odeslat připomínku";
-    }
-  });
-
-  g.appendChild(c);
+  thumbs.appendChild(b);
 });
 
-async function loadDownloadCounts(){
+meta.innerHTML=
+  '<span>'+x.fileType+'</span>'+
+  '<span>'+x.fileSize+'</span>'+
+  '<span>Verze '+x.version+'</span>'+
+  '<span id="downloadCount">⬇ načítám…</span>';
+
+const fileName=decodeURIComponent(x.download.split("/").pop());
+downloadBtn.href=RELEASE_BASE+encodeURIComponent(fileName);
+
+async function loadDownloadCount(){
   try{
     const response=await fetch(RELEASE_API,{headers:{"Accept":"application/vnd.github+json"}});
     if(!response.ok) throw new Error("GitHub API");
     const release=await response.json();
-    const assets=new Map((release.assets||[]).map(asset=>[asset.name,asset]));
-
-    document.querySelectorAll(".card[data-file]").forEach(card=>{
-      const asset=assets.get(card.dataset.file);
-      if(!asset) return;
-
-      const counter=card.querySelector(".download-count");
-      const link=card.querySelector(".download-link");
-      const total=(Number(card.dataset.offset)||0)+asset.download_count;
-      counter.textContent="⬇ "+total+" stažení";
-      link.href=asset.browser_download_url;
-    });
+    const asset=(release.assets||[]).find(a=>a.name===fileName);
+    if(!asset) throw new Error("asset");
+    const total=(Number(x.downloadOffset)||0)+asset.download_count;
+    document.getElementById("downloadCount").textContent="⬇ "+total+" stažení";
+    downloadBtn.href=asset.browser_download_url;
   }catch(err){
-    document.querySelectorAll(".download-count").forEach(el=>{
-      el.textContent="⬇ počet stažení nedostupný";
-    });
+    document.getElementById("downloadCount").textContent="⬇ počet nedostupný";
   }
 }
+loadDownloadCount();
 
-loadDownloadCounts();
+let gi=0;
+const dialog=document.getElementById("gallery");
+const galleryImage=document.getElementById("galleryImage");
+const pos=document.getElementById("pos");
+function showGallery(){
+  galleryImage.src=x.images[gi];
+  galleryImage.alt=x.name;
+  pos.textContent=(gi+1)+" / "+x.images.length;
+}
+function openGallery(start=0){
+  gi=start;showGallery();dialog.showModal();
+}
+mainPreview.onclick=()=>openGallery(0);
+galleryBtn.onclick=()=>openGallery(0);
+document.getElementById("closeGallery").onclick=()=>dialog.close();
+document.getElementById("prev").onclick=()=>{gi=(gi-1+x.images.length)%x.images.length;showGallery()};
+document.getElementById("next").onclick=()=>{gi=(gi+1)%x.images.length;showGallery()};
 
-document.getElementById("closeGallery").onclick=()=>d.close();
-document.getElementById("prev").onclick=()=>{
-  ii=(ii-1+a[ai].images.length)%a[ai].images.length;
-  show();
+const feedbackToggle=document.getElementById("feedbackToggle");
+const feedbackForm=document.getElementById("feedbackForm");
+document.getElementById("feedbackPage").value=location.href;
+feedbackToggle.onclick=()=>{
+  const opening=feedbackForm.hidden;
+  feedbackForm.hidden=!opening;
+  feedbackToggle.textContent=opening?"✕ Zavřít formulář":"💬 Napsat připomínku nebo nápad";
 };
-document.getElementById("next").onclick=()=>{
-  ii=(ii+1)%a[ai].images.length;
-  show();
-};
+feedbackForm.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const submit=feedbackForm.querySelector(".feedback-submit");
+  const status=feedbackForm.querySelector(".feedback-status");
+  submit.disabled=true;
+  submit.textContent="Odesílám…";
+  status.className="feedback-status";
+  status.textContent="";
+  try{
+    const response=await fetch(FORM_ENDPOINT,{method:"POST",body:new FormData(feedbackForm),headers:{"Accept":"application/json"}});
+    if(response.ok){
+      feedbackForm.reset();
+      feedbackForm.querySelector('input[name="addon"]').value=x.name;
+      document.getElementById("feedbackPage").value=location.href;
+      status.classList.add("success");
+      status.textContent="✓ Díky, připomínka byla odeslána.";
+    }else{
+      status.classList.add("error");
+      status.textContent="Nepodařilo se odeslat zprávu. Zkus to prosím znovu.";
+    }
+  }catch(err){
+    status.classList.add("error");
+    status.textContent="Nepodařilo se odeslat zprávu. Zkontroluj připojení a zkus to znovu.";
+  }finally{
+    submit.disabled=false;
+    submit.textContent="Odeslat připomínku";
+  }
+});
